@@ -122,7 +122,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			{
 				UnselectAll();
 			}
-			Keyboard.Focus(this);
+			Keyboard.Focus(this.DesignPanel);
 		}
 
 		public ZoomControl ZoomControl { get; private set; }
