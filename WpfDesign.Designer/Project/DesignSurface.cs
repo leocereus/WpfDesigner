@@ -167,9 +167,9 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			_designContext = context;
 			_designPanel.Context = context;
-		    _designPanel.ClearContextMenu();
+			_designPanel.ClearContextMenu();
 
-            if (context.RootItem != null) {
+			if (context.RootItem != null) {
 				_sceneContainer.Child = context.RootItem.View;
 			}
 			
@@ -286,10 +286,14 @@ namespace ICSharpCode.WpfDesign.Designer
 		public bool CanPaste()
 		{
 			ISelectionService selectionService = GetService<ISelectionService>();
-			if(selectionService!=null && selectionService.SelectedItems.Count!=0){
-				string xaml = Clipboard.GetText(TextDataFormat.Xaml);
-				if(xaml != "" && xaml != " ")
-					return true;
+			if (selectionService != null && selectionService.SelectedItems.Count != 0) {
+				try {
+					string xaml = Clipboard.GetText(TextDataFormat.Xaml);
+					if (xaml != "" && xaml != " ")
+						return true;
+				}
+				catch (Exception) {
+				}
 			}
 			return false;
 		}
