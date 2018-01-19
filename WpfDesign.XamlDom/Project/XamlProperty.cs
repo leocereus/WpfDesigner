@@ -447,7 +447,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					if (parentNode == null) {
 						parentNode = CreatePropertyElement();
 
-						parentObject.XmlElement.AppendChild(parentNode);
+						parentObject.XmlElement.PrependChild(parentNode);
+						//parentObject.XmlElement.AppendChild(parentNode);
 					}
 					else if (parentNode.ChildNodes.Cast<XmlNode>().Where(x => !(x is XmlWhitespace)).Count() > 0)
 						throw new XamlLoadException("Collection property node must have no children when adding collection element.");
