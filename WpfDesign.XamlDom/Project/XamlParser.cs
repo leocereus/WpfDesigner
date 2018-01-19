@@ -525,11 +525,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (getMethod != null || setMethod != null) {
 				FieldInfo field = elementType.GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
 				if (field != null && field.FieldType == typeof(DependencyProperty)) {
-					Func<object, object> getFunc = null;
-					if (getMethod != null) {
-						getFunc = obj => getMethod.Invoke(null, new[] {obj});
-					}
-					return new XamlDependencyPropertyInfo((DependencyProperty)field.GetValue(null), true, getFunc);
+					return new XamlDependencyPropertyInfo((DependencyProperty)field.GetValue(null), true);
 				}
 			}
 
