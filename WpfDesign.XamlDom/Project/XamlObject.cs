@@ -306,7 +306,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
-		void UpdateMarkupExtensionChain()
+		public void UpdateMarkupExtensionChain()
 		{
 			UpdateChildMarkupExtensions(this);
 
