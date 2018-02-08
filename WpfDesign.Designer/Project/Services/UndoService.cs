@@ -23,7 +23,7 @@ using System.Diagnostics;
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
 	#region ITransactionItem
-	interface ITransactionItem : IUndoAction
+	public interface ITransactionItem : IUndoAction
 	{
 		void Do();
 		void Undo();
@@ -53,10 +53,15 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	/// <summary>
 	/// Supports ChangeGroup transactions and undo behavior.
 	/// </summary>
-	sealed class UndoTransaction : ChangeGroup, ITransactionItem
+	public sealed class UndoTransaction : ChangeGroup, ITransactionItem
 	{
+		public event EventHandler Committed;
+		public event EventHandler RolledBack;
+		public event EventHandler Done;
+		public event EventHandler Undone;
+
 		readonly ICollection<DesignItem> affectedElements;
-		
+
 		internal UndoTransaction(ICollection<DesignItem> affectedElements)
 		{
 			this.affectedElements = affectedElements;
@@ -100,9 +105,6 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (_state != expectedState)
 				throw new InvalidOperationException("Expected state " + expectedState + ", but state is " + _state);
 		}
-		
-		public event EventHandler Committed;
-		public event EventHandler RolledBack;
 		
 		public override void Commit()
 		{
@@ -186,6 +188,16 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			return false;
 		}
+
+		internal void FireTransactionDone()
+		{
+			Done?.Invoke(this, EventArgs.Empty);
+		}
+
+		internal void FireTransactionUndone()
+		{
+			Undone?.Invoke(this, EventArgs.Empty);
+		}
 	}
 	#endregion
 	
@@ -224,6 +236,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				item.Do();
 				_undoStack.Push(item);
 				_redoStack.Clear();
+				(item as UndoTransaction)?.FireTransactionDone();
 				OnUndoStackChanged(EventArgs.Empty);
 			} else {
 				_transactionStack.Peek().Execute(item);
@@ -262,6 +275,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			try {
 				item.Undo();
 				_redoStack.Push(item);
+				(item as UndoTransaction)?.FireTransactionUndone();
 				OnUndoStackChanged(EventArgs.Empty);
 			} catch {
 				// state might be invalid now, clear stacks to prevent getting more inconsistencies
@@ -312,6 +326,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			try {
 				item.Do();
 				_undoStack.Push(item);
+				(item as UndoTransaction)?.FireTransactionDone();
 				OnUndoStackChanged(EventArgs.Empty);
 			} catch {
 				// state might be invalid now, clear stacks to prevent getting more inconsistencies
