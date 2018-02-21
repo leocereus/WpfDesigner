@@ -30,7 +30,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// the property value is reported as null when the transparent brush is used, and
 	/// setting the Brush to null actually restores the transparent brush.
 	/// </summary>
-	[ExtensionFor(typeof(Panel))]
+
+	// EyeDesign: We are no longer using this class for instantiating panels. Instead using class with same name in SharpDevelopModule
+	//[ExtensionFor(typeof(Panel))]
 	public sealed class PanelInstanceFactory : CustomInstanceFactory
 	{
 		Brush _transparentBrush = new SolidColorBrush(Colors.Transparent);
