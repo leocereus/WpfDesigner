@@ -88,6 +88,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 				DetermineCurrentKind();
 				RaisePropertyChanged("Property");
 				RaisePropertyChanged("Brush");
+				RaisePropertyChanged("Color");
 			}
 		}
 
@@ -108,6 +109,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 					property.Value = value;
 					DetermineCurrentKind();
 					RaisePropertyChanged("Brush");
+					RaisePropertyChanged("Color");
 				}
 			}
 		}
@@ -126,6 +128,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 				{
 					Brush = new SolidColorBrush(value);
 				}
+				RaisePropertyChanged("Color");
 			}
 		}
 
@@ -205,6 +208,11 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 		
 		public IEnumerable<BrushItem> AvailableWpfBrushes {
 				get { return WpfBrushes; }
+		}
+
+		public IEnumerable<BrushItem> AvailableSystemBrushes
+		{
+			get { return SystemBrushes; }
 		}
 
 		public void MakeGradientHorizontal()

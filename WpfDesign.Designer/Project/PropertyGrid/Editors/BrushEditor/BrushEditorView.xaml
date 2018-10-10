@@ -71,7 +71,7 @@
 			<BrushEditor:GradientBrushEditor />
 		</TabItem>
 		<TabItem Header="System Brushes">
-			<ListBox MaxHeight="320" ItemsSource="{Binding SystemBrushes}"
+			<ListBox MaxHeight="320" ItemsSource="{Binding AvailableSystemBrushes}"
 			         SelectedValue="{Binding Color}"
 			         SelectedValuePath="Brush.Color" />
 		</TabItem>
