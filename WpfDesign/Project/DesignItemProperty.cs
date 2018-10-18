@@ -102,7 +102,7 @@ namespace ICSharpCode.WpfDesign
 		/// Gets/Sets the value of the property on the designed instance.
 		/// If the property is not set, this returns the default value.
 		/// </summary>
-		public abstract object ValueOnInstance { get; }
+		public abstract object ValueOnInstance { get; set; }
 		
 		/// <summary>
 		/// Sets the value of the property.
