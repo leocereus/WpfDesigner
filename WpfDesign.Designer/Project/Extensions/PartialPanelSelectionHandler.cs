@@ -103,7 +103,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					}
 					if (model != container)
 					{
-						resultItems.Add(model);
+						// We need to make sure that parent model is a visual container. See EYE-4037
+						if(model.Parent.ContentProperty != null && model.Parent.ContentProperty.IsCollection)
+						{
+							resultItems.Add(model);
+						}
 					}
 				}
 				return HitTestResultBehavior.Continue;
