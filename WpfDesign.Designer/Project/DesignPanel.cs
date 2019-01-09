@@ -436,9 +436,9 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down) {
 				e.Handled = true;
-				
-				PlacementType placementType = Keyboard.IsKeyDown(Key.LeftCtrl) ? PlacementType.Resize : PlacementType.MoveAndIgnoreOtherContainers;
-				
+
+				PlacementType placementType = Keyboard.IsKeyDown(Key.LeftCtrl) ? PlacementType.Resize : PlacementType.Move;
+
 				if (placementOp != null && placementOp.Type != placementType) {
 					placementOp.Commit();
 					placementOp = null;
@@ -448,13 +448,21 @@ namespace ICSharpCode.WpfDesign.Designer
 					
 					//check if any objects don't want the default action to be invoked
 					List<DesignItem> placedItems = Context.Services.Selection.SelectedItems.Where(x => x.Extensions.All(InvokeDefaultKeyDownAction)).ToList();
-					
+
 					//if no remaining objects, break
-					if (placedItems.Count < 1) return;
-					
+					if (placedItems.Count < 1)
+					{
+						return;
+					}
+
 					dx = 0;
 					dy = 0;
 					placementOp = PlacementOperation.Start(placedItems, placementType);
+
+					if(placementOp == null)
+					{
+						return;
+					}
 				}
 				
 				switch (e.Key) {
@@ -476,8 +484,8 @@ namespace ICSharpCode.WpfDesign.Designer
 				{
 					var bounds = info.OriginalBounds;
 					
-					if (placementType == PlacementType.Move 
-						|| info.Operation.Type == PlacementType.MoveAndIgnoreOtherContainers) {
+					if (placementType == PlacementType.Move)
+					{
 						info.Bounds = new Rect(bounds.Left + dx,
 						                       bounds.Top + dy,
 						                       bounds.Width,

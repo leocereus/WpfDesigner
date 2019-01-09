@@ -85,11 +85,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void SetPosition(PlacementInformation info)
 		{
-			if (info.Operation.Type != PlacementType.Move 
-				&& info.Operation.Type != PlacementType.MovePoint
-				&& info.Operation.Type != PlacementType.MoveAndIgnoreOtherContainers)
+			if (info.Operation.Type != PlacementType.Move && info.Operation.Type != PlacementType.MovePoint)
+			{
 				ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
-
+			}
 			//if (info.Operation.Type == PlacementType.MovePoint)
 			//	ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
 		}

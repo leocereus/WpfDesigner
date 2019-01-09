@@ -192,8 +192,10 @@ namespace ICSharpCode.WpfDesign
 			PlacementOperation op = new PlacementOperation(items, type);
 			try {
 				if (op.currentContainerBehavior == null)
-					throw new PlacementOperationException("Starting the operation is not supported");
-				
+				{
+					op.changeGroup.Abort();
+					return null;
+				}
 				op.currentContainerBehavior.BeginPlacement(op);
 				foreach (PlacementInformation info in op.placedItems) {
 					info.OriginalBounds = op.currentContainerBehavior.GetPosition(op, info.Item);
@@ -279,9 +281,7 @@ namespace ICSharpCode.WpfDesign
 			foreach (DesignItem item in possibleItems.Skip(1))
 			{
 				if (item.Parent != parent) {
-					if (placementType != PlacementType.MoveAndIgnoreOtherContainers) {
-						return null;
-					}
+					return null;
 				}
 				else
 					moveableItems.Add(item);
