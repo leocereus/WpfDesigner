@@ -142,8 +142,11 @@ namespace ICSharpCode.WpfDesign.Designer
 
 			bool continueHitTest = true;
 
-			HitTestFilterCallback filterBehavior = CustomHitTestFilterBehavior ?? (x => FilterHitTestInvisibleElements(x, hitTestType));
-			CustomHitTestFilterBehavior = null;
+			HitTestFilterCallback filterBehavior = CustomHitTestFilterBehavior;
+			if (filterBehavior == null)
+			{
+				throw new Exception("HitFilter is null");
+			}
 
 			if (testAdorners) {
 
@@ -207,7 +210,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		public DesignPanel()
 		{
 			this.Focusable = true;
-			this.Margin = new Thickness(16);
+			this.Margin = new Thickness(0);
 			DesignerProperties.SetIsInDesignMode(this, true);
 			
 			_eatAllHitTestRequests = new EatAllHitTestRequests();
