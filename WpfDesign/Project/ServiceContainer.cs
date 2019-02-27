@@ -82,8 +82,11 @@ namespace ICSharpCode.WpfDesign
 				throw new ArgumentNullException("serviceInstance");
 			
 			if (_services.ContainsKey(serviceInterface))
+			{
+				(GetService(serviceInterface) as IDisposable)?.Dispose();
 				_services.Remove(serviceInterface);
-			
+			}
+
 			_services.Add(serviceInterface, serviceInstance);
 			
 			Delegate subscriber;

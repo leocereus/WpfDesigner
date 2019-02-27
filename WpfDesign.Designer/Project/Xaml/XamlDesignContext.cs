@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
-using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors;
@@ -68,10 +67,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			this.Services.AddService(typeof(ISelectionService), new DefaultSelectionService());
 			this.Services.AddService(typeof(IComponentPropertyService), new ComponentPropertyService());		
-			this.Services.AddService(typeof(IToolService), new DefaultToolService(this));
+			// this.Services.AddService(typeof(IToolService), new DefaultToolService(this));
 			this.Services.AddService(typeof(UndoService), new UndoService());
 			this.Services.AddService(typeof(IErrorService), new DefaultErrorService(this));
-			this.Services.AddService(typeof(IOutlineNodeNameService), new OutlineNodeNameService());
+			// this.Services.AddService(typeof(IOutlineNodeNameService), new OutlineNodeNameService());
 			this.Services.AddService(typeof(ViewService), new DefaultViewService(this));
 			this.Services.AddService(typeof(OptionService), new OptionService());
 
@@ -112,9 +111,19 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			if (_doc == null) {
 				string message;
 				if (xamlErrorService != null && xamlErrorService.Errors.Count > 0)
+				{
 					message = xamlErrorService.Errors[0].Message;
+				}
 				else
+				{
 					message = "Could not load document.";
+				}
+				// Remove all registered services again before throwing the exception
+				foreach (object o in this.Services.AllServices)
+				{
+					IDisposable d = o as IDisposable;
+					if (d != null) d.Dispose();
+				}
 				throw new XamlLoadException(message);
 			}
 

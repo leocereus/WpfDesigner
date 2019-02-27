@@ -38,7 +38,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		readonly XamlDesignContext _designContext;
 		readonly XamlModelPropertyCollection _properties;
 		UIElement _view;
-		
+		public override event EventHandler LockingStatusChanged;
+		public override event EventHandler DesignTimeHiddenStatusChanged;
+
 		public XamlDesignItem(XamlObject xamlObject, XamlDesignContext designContext)
 		{
 			this._xamlObject = xamlObject;
@@ -281,20 +283,132 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// <summary>
 		/// Item is Locked at Design Time
 		/// </summary>
-		public bool IsDesignTimeLocked {
-			get {
+		public bool IsDesignTimeLocked
+		{
+			get
+			{
 				var locked = Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
-				return (locked != null && (bool) locked == true);
+				return (locked != null && (bool)locked == true);
 			}
-			set {
+			set
+			{
 				if (value)
 					Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).SetValue(true);
 				else
 					Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
+
+				NotifyLockedItems();
 			}
-			
 		}
-		
+
+		public bool HasDesignTimeLockedParent
+		{
+			get
+			{
+				XamlDesignItem parent = this.Parent as XamlDesignItem;
+				while (parent != null)
+				{
+					if (parent.IsDesignTimeLocked)
+						return true;
+					parent = parent.Parent as XamlDesignItem;
+				}
+				return false;
+			}
+		}
+
+		public override LockingStatus LockingStatus
+		{
+			get
+			{
+				if (IsDesignTimeLocked)
+					return LockingStatus.Locked;
+
+				else if (HasDesignTimeLockedParent)
+					return LockingStatus.IndirectlyLocked;
+
+				return LockingStatus.NotLocked;
+			}
+		}
+
+		private void NotifyLockedItems()
+		{
+			LockingStatusChanged?.Invoke(this, EventArgs.Empty);
+
+			if (this.ContentProperty != null && this.ContentProperty.IsCollection)
+			{
+				foreach (var child in this.ContentProperty.CollectionElements.OfType<XamlDesignItem>())
+				{
+					if (ModelTools.CanSelectComponent(child))
+					{
+						child.NotifyLockedItems();
+					}
+				}
+			}
+		}
+
+		public bool IsDesignTimeHidden
+		{
+			get
+			{
+				var hidden = Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).ValueOnInstance;
+				return (hidden != null && (bool)hidden == true);
+			}
+			set
+			{
+				if (value)
+					Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).SetValue(true);
+				else
+					Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).Reset();
+
+				NotifyHiddenItems();
+			}
+		}
+
+		public bool HasDesignTimeHiddenParent
+		{
+			get
+			{
+				XamlDesignItem parent = this.Parent as XamlDesignItem;
+				while (parent != null)
+				{
+					if (parent.IsDesignTimeHidden)
+						return true;
+					parent = parent.Parent as XamlDesignItem;
+				}
+				return false;
+			}
+		}
+
+		public override DesignTimeHiddenStatus DesignTimeHiddenStatus
+		{
+			get
+			{
+				if (IsDesignTimeHidden)
+					return DesignTimeHiddenStatus.Hidden;
+
+				else if (HasDesignTimeHiddenParent)
+					return DesignTimeHiddenStatus.IndirectlyHidden;
+
+				return DesignTimeHiddenStatus.NotHidden;
+			}
+		}
+
+		private void NotifyHiddenItems()
+		{
+			DesignTimeHiddenStatusChanged?.Invoke(this, EventArgs.Empty);
+
+			if (this.ContentProperty != null && this.ContentProperty.IsCollection)
+			{
+				foreach (var child in this.ContentProperty.CollectionElements.OfType<XamlDesignItem>())
+				{
+					if (ModelTools.CanSelectComponent(child))
+					{
+						child.NotifyHiddenItems();
+					}
+				}
+			}
+		}
+
 		public override DesignItem Clone()
 		{
 			DesignItem item = null;

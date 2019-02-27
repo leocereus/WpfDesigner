@@ -32,7 +32,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// </summary>
 
 	// EyeDesign: We are no longer using this class for instantiating panels. Instead using class with same name in SharpDevelopModule
-	//[ExtensionFor(typeof(Panel))]
+//	[ExtensionFor(typeof(Panel))]
 	public sealed class PanelInstanceFactory : CustomInstanceFactory
 	{
 		Brush _transparentBrush = new SolidColorBrush(Colors.Transparent);
@@ -56,7 +56,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 	}
 	
-	[ExtensionFor(typeof(HeaderedContentControl))]
+//	[ExtensionFor(typeof(HeaderedContentControl))]
 	public sealed class HeaderedContentControlInstanceFactory : CustomInstanceFactory
 	{
 		Brush _transparentBrush = new SolidColorBrush(Colors.Transparent);
@@ -80,7 +80,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 	}
 	
-	[ExtensionFor(typeof(ItemsControl))]
+//	[ExtensionFor(typeof(ItemsControl))]
 	public sealed class TransparentControlsInstanceFactory : CustomInstanceFactory
 	{
 		Brush _transparentBrush = new SolidColorBrush(Colors.Transparent);
@@ -106,7 +106,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 	}
 	
-	[ExtensionFor(typeof(Border))]
+//	[ExtensionFor(typeof(Border))]
 	public sealed class BorderInstanceFactory : CustomInstanceFactory
 	{
 		Brush _transparentBrush = new SolidColorBrush(Colors.Transparent);

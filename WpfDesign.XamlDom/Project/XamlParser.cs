@@ -491,7 +491,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		internal static XamlPropertyInfo FindProperty(object elementInstance, Type propertyType, string propertyName)
 		{
-			PropertyDescriptor propertyInfo = TypeDescriptor.GetProperties(propertyType)[propertyName];
+			PropertyDescriptor propertyInfo = null;
+
+			// First try to get property descriptor from provider registered with instance
+			if (elementInstance != null)
+				propertyInfo = TypeDescriptor.GetProperties(elementInstance)[propertyName];
+
+			// If no success then try to get property descriptor from provider registered with type
+			if(propertyInfo == null)
+				propertyInfo = TypeDescriptor.GetProperties(propertyType)[propertyName];
 
 			if (propertyInfo == null && elementInstance != null)
 				propertyInfo = TypeDescriptor.GetProperties(elementInstance).OfType<DependencyPropertyDescriptor>().FirstOrDefault(x => x.IsAttached && x.Name == propertyName);

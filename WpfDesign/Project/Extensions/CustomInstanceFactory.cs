@@ -53,11 +53,20 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// </summary>
 		public virtual object CreateInstance(Type type, params object[] arguments)
 		{
+			return CreateInstance(null, type, arguments);
+		}
+
+		/// <summary>
+		/// Creates an instance of the specified type, passing the specified arguments to its constructor. Access to IServiceProvider
+		/// </summary>
+		public virtual object CreateInstance(ServiceContainer services, Type type, params object[] arguments)
+		{
 			var instance = Activator.CreateInstance(type, arguments);
 			var uiElement = instance as UIElement;
 			if (uiElement != null)
 				DesignerProperties.SetIsInDesignMode(uiElement, true);
 			return instance;
 		}
+
 	}
 }

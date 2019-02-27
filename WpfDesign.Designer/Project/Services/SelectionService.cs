@@ -111,7 +111,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				case SelectionTypes.Add:
 					// add to selection and notify if required
 					foreach (DesignItem obj in components) {
-						if (_selectedComponents.Add(obj))
+						if (TryAddToSelection(obj))
 							componentsToNotifyOfSelectionChange.Add(obj);
 					}
 					break;
@@ -128,9 +128,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					// set _selectedCompontents to new components
 					_selectedComponents.Clear();
 					foreach (DesignItem obj in components) {
-						_selectedComponents.Add(obj);
-						// notify the new components
-						componentsToNotifyOfSelectionChange.Add(obj);
+						if (TryAddToSelection(obj))
+							componentsToNotifyOfSelectionChange.Add(obj);
 					}
 					break;
 				case SelectionTypes.Toggle:
@@ -138,10 +137,12 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					foreach (DesignItem obj in components) {
 						if (_selectedComponents.Contains(obj)) {
 							_selectedComponents.Remove(obj);
-						} else {
-							_selectedComponents.Add(obj);
+							componentsToNotifyOfSelectionChange.Add(obj);
 						}
-						componentsToNotifyOfSelectionChange.Add(obj);
+						else {
+							if (TryAddToSelection(obj))
+								componentsToNotifyOfSelectionChange.Add(obj);
+						}
 					}
 					break;
 				case 0:
@@ -181,7 +182,15 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				RaisePropertyChanged("SelectedItems");
 			}
 		}
-		
+
+		private bool TryAddToSelection(DesignItem item)
+		{
+			if (item.LockingStatus == LockingStatus.Locked || item.LockingStatus == LockingStatus.IndirectlyLocked)
+				return false;
+
+			return _selectedComponents.Add(item);
+		}
+
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;

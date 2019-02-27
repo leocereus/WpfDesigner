@@ -109,7 +109,27 @@ namespace ICSharpCode.WpfDesign
 			[DebuggerStepThrough]
 			get { return this.Context.Services; }
 		}
-		
+
+		/// <summary>
+		/// Returns the actual designtime locking status. Can be "Locked", "IndirectlyLocked" or "NotLocked"
+		/// </summary>
+		public abstract LockingStatus LockingStatus { get; }
+
+		/// <summary>
+		/// Is raised when the LockStatus of the design item changes.
+		/// </summary>
+		public abstract event EventHandler LockingStatusChanged;
+
+		/// <summary>
+		/// Returns the actual designtime hidden status. Can be "Hidden", "IndirectlyHidden" or "NotHidden"
+		/// </summary>
+		public abstract DesignTimeHiddenStatus DesignTimeHiddenStatus { get; }
+
+		/// <summary>
+		/// Is raised when the DesignTimeHiddenStatus of the design item changes.
+		/// </summary>
+		public abstract event EventHandler DesignTimeHiddenStatusChanged;
+
 		/// <summary>
 		/// Opens a new change group used to batch several changes.
 		/// ChangeGroups work as transactions and are used to support the Undo/Redo system.
@@ -360,4 +380,19 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 	}
+
+	public enum LockingStatus
+	{
+		NotLocked,
+		Locked,
+		IndirectlyLocked
+	}
+
+	public enum DesignTimeHiddenStatus
+	{
+		NotHidden,
+		Hidden,
+		IndirectlyHidden
+	}
+
 }

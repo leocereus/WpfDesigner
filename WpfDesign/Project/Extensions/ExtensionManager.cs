@@ -21,6 +21,8 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.ComponentModel;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Extensions
 {
@@ -45,8 +47,12 @@ namespace ICSharpCode.WpfDesign.Extensions
 		void OnComponentRegistered(object sender, DesignItemEventArgs e)
 		{
 			e.Item.SetExtensionServers(this, GetExtensionServersForItem(e.Item));
+
+			UIElement element = e.Item.Component as UIElement;
+			if (element != null)
+				TypeDescriptor.Refresh(element);
 		}
-		
+
 		/// <summary>
 		/// Re-applies extensions from the ExtensionServer to the specified design items.
 		/// </summary>
@@ -270,10 +276,10 @@ namespace ICSharpCode.WpfDesign.Extensions
 			foreach (Type extensionType in GetExtensionTypes(instanceType)) {
 				if (typeof(CustomInstanceFactory).IsAssignableFrom(extensionType)) {
 					CustomInstanceFactory factory = (CustomInstanceFactory)Activator.CreateInstance(extensionType);
-					return factory.CreateInstance(instanceType, arguments);
+					return factory.CreateInstance(_context.Services, instanceType, arguments);
 				}
 			}
-			return CustomInstanceFactory.DefaultInstanceFactory.CreateInstance(instanceType, arguments);
+			return CustomInstanceFactory.DefaultInstanceFactory.CreateInstance(_context.Services, instanceType, arguments);
 		}
 		
 		/// <summary>

@@ -119,13 +119,13 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		/// <returns></returns>
 		public static IEnumerable<PropertyDescriptor> GetCommonAvailableProperties(IEnumerable<object> elements)
 		{
-			var properties = TypeDescriptor.GetProperties(elements.First()).Cast<PropertyDescriptor>();
+			var properties = GetAvailableProperties(elements.First());
+
 			foreach (var element in elements.Skip(1))
 			{
-				var currentProperties = TypeDescriptor.GetProperties(element).Cast<PropertyDescriptor>();
+				var currentProperties = GetAvailableProperties(element);
 				properties = Enumerable.Intersect(properties, currentProperties);
 			}
-			
 			return properties;
 		}
 	}
