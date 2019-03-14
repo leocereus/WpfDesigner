@@ -21,12 +21,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Markup;
-
 using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
-	sealed class XamlComponentService : IComponentService
+	public sealed class XamlComponentService : IComponentService
 	{
 		public event EventHandler<DesignItemPropertyChangedEventArgs> PropertyChanged;
 		
@@ -115,7 +114,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// <summary>
 		/// registers components from an existing XAML tree
 		/// </summary>
-		internal void RaiseComponentRegisteredAndAddedToContainer(DesignItem obj)
+		public void RaiseComponentRegisteredAndAddedToContainer(DesignItem obj)
 		{
 			if (ComponentRegisteredAndAddedToContainer != null) {
 				ComponentRegisteredAndAddedToContainer(this, new DesignItemEventArgs(obj));
