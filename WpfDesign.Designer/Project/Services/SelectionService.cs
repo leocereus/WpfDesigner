@@ -76,12 +76,21 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			DesignItem newPrimarySelection = _primarySelection;
 			
 			if (selectionType == SelectionTypes.Auto) {
-				if (Keyboard.Modifiers == ModifierKeys.Control)
-					selectionType = SelectionTypes.Toggle; // Ctrl pressed: toggle selection
-				else if ((Keyboard.Modifiers & ~ModifierKeys.Control) == ModifierKeys.Shift)
-					selectionType = SelectionTypes.Add; // Shift or Ctrl+Shift pressed: add to selection
+				if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+				{
+					// Ctrl pressed: toggle selection
+					selectionType = SelectionTypes.Toggle;
+				}
+				else if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+				{
+					// Shift pressed: add to selection
+					selectionType = SelectionTypes.Add; 
+				}
 				else
-					selectionType = SelectionTypes.Primary; // otherwise: change primary selection
+				{
+					// otherwise: change primary selection
+					selectionType = SelectionTypes.Primary;
+				}
 			}
 			
 			if ((selectionType & SelectionTypes.Primary) == SelectionTypes.Primary) {
@@ -185,7 +194,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 
 		private bool TryAddToSelection(DesignItem item)
 		{
-			if (item.LockingStatus == LockingStatus.Locked || item.LockingStatus == LockingStatus.IndirectlyLocked)
+			var lockingStatus = item.LockingStatus;
+			if (lockingStatus == LockingStatus.Locked || lockingStatus == LockingStatus.IndirectlyLocked)
 				return false;
 
 			return _selectedComponents.Add(item);

@@ -27,18 +27,12 @@ using System.Windows.Media;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.UIExtensions;
-using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
 	public sealed class DesignPanel : Decorator, IDesignPanel, INotifyPropertyChanged
 	{
-		#region Hit Testing
-		
-		private List<DesignItem> hitTestElements = new List<DesignItem>();
-		private List<DesignItem> skippedHitTestElements = new List<DesignItem>();
-
 
 		/// <summary>
 		/// this element is always hit (unless HitTestVisible is set to false)
@@ -58,62 +52,9 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		void RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback, HitTestResultCallback resultCallback)
 		{
-			if (!Keyboard.IsKeyDown(Key.LeftAlt))
-			{
-				hitTestElements.Clear();
-				skippedHitTestElements.Clear();
-			}
-
-			VisualTreeHelper.HitTest(reference, filterCallback, resultCallback,
-			                         new PointHitTestParameters(point));
+			VisualTreeHelper.HitTest(reference, filterCallback, resultCallback, new PointHitTestParameters(point));
 		}
 
-		HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget, HitTestType hitTestType)
-		{
-			UIElement element = potentialHitTestTarget as UIElement;
-			
-			if (element != null) {
-				if (!(element.IsHitTestVisible && element.Visibility == Visibility.Visible)) {
-					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
-				}
-				
-				var designItem = Context.Services.Component.GetDesignItem(element) as XamlDesignItem;
-
-				if (hitTestType == HitTestType.ElementSelection)
-				{
-					if (Keyboard.IsKeyDown(Key.LeftAlt))
-					{
-						if (designItem != null)
-						{
-							if (skippedHitTestElements.LastOrDefault() == designItem ||
-							    (hitTestElements.Contains(designItem) && !skippedHitTestElements.Contains(designItem)))
-							{
-								skippedHitTestElements.Remove(designItem);
-								return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
-							}
-						}
-					}
-				}
-				else
-				{
-					hitTestElements.Clear();
-					skippedHitTestElements.Clear();
-				}
-
-				if (designItem != null && designItem.IsDesignTimeLocked) {
-					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
-				}
-
-				if (designItem != null && !hitTestElements.Contains(designItem))
-				{
-					hitTestElements.Add(designItem);
-					skippedHitTestElements.Add(designItem);
-				}
-			}
-			
-			return HitTestFilterBehavior.Continue;
-		}
-		
 		/// <summary>
 		/// Performs a custom hit testing lookup for the specified mouse event args.
 		/// </summary>
@@ -135,72 +76,85 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public void HitTest(Point mousePosition, bool testAdorners, bool testDesignSurface, Predicate<DesignPanelHitTestResult> callback, HitTestType hitTestType)
 		{
-			if (mousePosition.X < 0 || mousePosition.Y < 0 || mousePosition.X > this.RenderSize.Width || mousePosition.Y > this.RenderSize.Height) {
+			if (mousePosition.X < 0 || mousePosition.Y < 0 || mousePosition.X > this.RenderSize.Width || mousePosition.Y > this.RenderSize.Height)
+			{
 				return;
 			}
-			// First try hit-testing on the adorner layer.
 
 			bool continueHitTest = true;
 
 			HitTestFilterCallback filterBehavior = CustomHitTestFilterBehavior;
 			if (filterBehavior == null)
 			{
-				throw new Exception("HitFilter is null");
+				throw new Exception("HitTestFilter is null");
 			}
 
-			if (testAdorners) {
-
+			/*
+			// Only used by the InPlaceEditorExtension which we are not currently using
+			if (testAdorners)
+			{
 				RunHitTest(
 					_adornerLayer, mousePosition, filterBehavior,
-					delegate(HitTestResult result) {
-						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
+					delegate (HitTestResult result)
+					{
+						if (result != null && result.VisualHit != null && result.VisualHit is Visual)
+						{
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
 							DependencyObject obj = result.VisualHit;
-							while (obj != null && obj != _adornerLayer) {
+							while (obj != null && obj != _adornerLayer)
+							{
 								AdornerPanel adorner = obj as AdornerPanel;
-								if (adorner != null) {
+								if (adorner != null)
+								{
 									customResult.AdornerHit = adorner;
 								}
 								obj = VisualTreeHelper.GetParent(obj);
 							}
 							continueHitTest = callback(customResult);
 							return continueHitTest ? HitTestResultBehavior.Continue : HitTestResultBehavior.Stop;
-						} else {
+						}
+						else
+						{
 							return HitTestResultBehavior.Continue;
 						}
 					});
 			}
+			*/
 
-			if (continueHitTest && testDesignSurface) {
+			if (continueHitTest && testDesignSurface)
+			{
 				RunHitTest(
 					this.Child, mousePosition, filterBehavior,
-					delegate(HitTestResult result) {
-						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
+					delegate (HitTestResult result)
+					{
+						if (result != null && result.VisualHit != null && result.VisualHit is Visual)
+						{
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
 
 							ViewService viewService = _context.Services.View;
 							DependencyObject obj = result.VisualHit;
-							
-							while (obj != null) {
+
+							while (obj != null)
+							{
 								if ((customResult.ModelHit = viewService.GetModel(obj)) != null)
 									break;
 								obj = VisualTreeHelper.GetParent(obj);
 							}
-							if (customResult.ModelHit == null) {
+							if (customResult.ModelHit == null)
+							{
 								customResult.ModelHit = _context.RootItem;
 							}
-							
-							
 							continueHitTest = callback(customResult);
 							return continueHitTest ? HitTestResultBehavior.Continue : HitTestResultBehavior.Stop;
-						} else {
+						}
+						else
+						{
 							return HitTestResultBehavior.Continue;
 						}
 					}
 				);
 			}
 		}
-		#endregion
 		
 		#region Fields + Constructor
 		DesignContext _context;
@@ -230,7 +184,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		public DesignSurface DesignSurface { get; internal set; }
 		
-		//Set custom HitTestFilterCallbak
 		public HitTestFilterCallback CustomHitTestFilterBehavior { get; set; }
 
 		public AdornerLayer AdornerLayer
