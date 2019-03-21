@@ -300,9 +300,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
 		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, e);
-			}
+			PropertyChanged?.Invoke(this, e);
 		}
 
 		/// <summary>
@@ -381,17 +379,41 @@ namespace ICSharpCode.WpfDesign
 		}
 	}
 
+	/// <summary>
+	/// Design time locking status for the design item
+	/// </summary>
 	public enum LockingStatus
 	{
+		/// <summary>
+		/// Item is not locked
+		/// </summary>
 		NotLocked,
+		/// <summary>
+		/// Item is excpicitly locked
+		/// </summary>
 		Locked,
+		/// <summary>
+		/// Item is indirectly locked (ancestor is locked)
+		/// </summary>
 		IndirectlyLocked
 	}
 
+	/// <summary>
+	/// Design time hidden status for the design item
+	/// </summary>
 	public enum DesignTimeHiddenStatus
 	{
+		/// <summary>
+		/// Item is not design time hidden
+		/// </summary>
 		NotHidden,
+		/// <summary>
+		/// Item is design time hidden
+		/// </summary>
 		Hidden,
+		/// <summary>
+		/// Item is indirectly hidden (ancestor is hidden)
+		/// </summary>
 		IndirectlyHidden
 	}
 
