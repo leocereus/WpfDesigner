@@ -144,6 +144,13 @@ namespace ICSharpCode.WpfDesign.Designer
 							{
 								customResult.ModelHit = _context.RootItem;
 							}
+							// We need to make sure that parent model is a visual container. See EYE-4037
+							var parentHit = customResult.ModelHit.Parent;
+							if (parentHit == null || parentHit.ContentProperty == null || !parentHit.ContentProperty.IsCollection)
+							{
+								return HitTestResultBehavior.Continue;
+							}
+
 							continueHitTest = callback(customResult);
 							return continueHitTest ? HitTestResultBehavior.Continue : HitTestResultBehavior.Stop;
 						}
