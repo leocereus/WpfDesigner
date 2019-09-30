@@ -25,6 +25,7 @@ using System.Windows.Controls;
 using System.Windows;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.XamlDom;
+using System.Windows.Controls.Primitives;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -140,7 +141,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			if (ExtendedItem.Component is UserControl && ExtendedItem.ComponentType != typeof(UserControl))
 				return false;
-			
+
+			if (ExtendedItem.Component is ButtonBase)
+				return false;
+
 			if (ExtendedItem.Component is Decorator)
 				return ((Decorator)ExtendedItem.Component).Child == null;
 			
