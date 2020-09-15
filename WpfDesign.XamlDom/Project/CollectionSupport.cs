@@ -90,6 +90,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				{
 					if (val is Style)
 						key = ((Style)val).TargetType;
+
+					else if (val is DataTemplate)
+						key = ((DataTemplate)val).DataTemplateKey;
+
 				}
 				if (key == null || (key as string) == "")
 					key = val;
